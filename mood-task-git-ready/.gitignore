@@ -1,0 +1,25 @@
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Editor/project settings
+.vscode/
+.idea/
+
+# Logs and temp files
+*.log
+*.tmp
+*.temp
+
+# Environment/secrets
+.env
+.env.*
+
+# Dependencies/build output if this project later adds a build step
+node_modules/
+dist/
+build/
+.cache/
+
+# Personal app backups exported from MoodTask
+moodtask-backup-*.json

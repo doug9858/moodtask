@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#6d5dfc">
+  <meta name="description" content="A mood, energy, time, and life-area based task generator.">
+  <title>MoodTask</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">Android-friendly PWA</p>
+        <h1>MoodTask</h1>
+        <p class="subtitle">Pick useful tasks based on your mood, energy, time of day, and life area.</p>
+      </div>
+      <button id="installButton" class="install-button hidden" type="button">Install</button>
+    </header>
+
+    <main>
+      <section id="screen-generator" class="screen active" aria-labelledby="generator-title">
+        <div class="card intro-card">
+          <div>
+            <h2 id="generator-title">What kind of task fits right now?</h2>
+            <p>Choose your current context, then let the app pick something from your personal list.</p>
+          </div>
+        </div>
+
+        <form id="generatorForm" class="card form-grid">
+          <label>
+            <span>Life area</span>
+            <select id="prefLifeArea" name="lifeArea"></select>
+          </label>
+          <label>
+            <span>Energy</span>
+            <select id="prefEnergy" name="energy"></select>
+          </label>
+          <label>
+            <span>Time</span>
+            <select id="prefTime" name="time"></select>
+          </label>
+          <label>
+            <span>Mood</span>
+            <select id="prefMood" name="mood"></select>
+          </label>
+          <label>
+            <span>Max minutes</span>
+            <select id="prefDuration" name="duration">
+              <option value="Any">Any</option>
+              <option value="5">5 minutes</option>
+              <option value="10">10 minutes</option>
+              <option value="15">15 minutes</option>
+              <option value="30">30 minutes</option>
+              <option value="60">60 minutes</option>
+            </select>
+          </label>
+          <label class="toggle-row">
+            <input id="prefAvoidRecent" type="checkbox" checked>
+            <span>Avoid recently completed/skipped tasks</span>
+          </label>
+          <div class="button-row wide">
+            <button id="generateButton" class="primary" type="submit">Pick a task</button>
+            <button id="clearPrefsButton" class="ghost" type="button">Clear</button>
+          </div>
+        </form>
+
+        <div id="generatedTask" class="generated-slot" aria-live="polite"></div>
+      </section>
+
+      <section id="screen-add" class="screen" aria-labelledby="add-title">
+        <div class="card intro-card">
+          <div>
+            <h2 id="add-title">Add a task</h2>
+            <p>Tag each task so the generator knows when it fits you best.</p>
+          </div>
+        </div>
+
+        <form id="taskForm" class="card task-form">
+          <input type="hidden" id="taskId">
+          <label class="wide">
+            <span>Task name</span>
+            <input id="taskTitle" type="text" maxlength="120" placeholder="e.g. Text one family member something kind" required>
+          </label>
+
+          <div class="wide field-group">
+            <div class="field-heading">Life areas</div>
+            <div id="lifeAreaChips" class="chip-grid"></div>
+          </div>
+
+          <div class="field-group">
+            <div class="field-heading">Energy</div>
+            <div id="energyChips" class="chip-grid compact"></div>
+          </div>
+
+          <div class="field-group">
+            <div class="field-heading">Time of day</div>
+            <div id="timeChips" class="chip-grid compact"></div>
+          </div>
+
+          <div class="wide field-group">
+            <div class="field-heading">Mood fit</div>
+            <div id="moodChips" class="chip-grid"></div>
+          </div>
+
+          <label>
+            <span>Duration</span>
+            <select id="taskDuration">
+              <option value="5">5 minutes</option>
+              <option value="10">10 minutes</option>
+              <option value="15">15 minutes</option>
+              <option value="30">30 minutes</option>
+              <option value="60">60 minutes</option>
+            </select>
+          </label>
+
+          <label>
+            <span>Difficulty</span>
+            <select id="taskDifficulty"></select>
+          </label>
+
+          <label>
+            <span>Location</span>
+            <input id="taskLocation" type="text" maxlength="60" placeholder="Anywhere">
+          </label>
+
+          <label>
+            <span>Type</span>
+            <select id="taskType"></select>
+          </label>
+
+          <label class="toggle-row wide">
+            <input id="taskRepeatable" type="checkbox" checked>
+            <span>Can be repeated after completion</span>
+          </label>
+
+          <label class="wide">
+            <span>Notes</span>
+            <textarea id="taskNotes" rows="4" maxlength="500" placeholder="Optional reminder, detail, or tiny first step"></textarea>
+          </label>
+
+          <div class="button-row wide">
+            <button id="saveTaskButton" class="primary" type="submit">Save task</button>
+            <button id="cancelEditButton" class="ghost hidden" type="button">Cancel edit</button>
+          </div>
+        </form>
+      </section>
+
+      <section id="screen-library" class="screen" aria-labelledby="library-title">
+        <div class="card intro-card">
+          <div>
+            <h2 id="library-title">Task library</h2>
+            <p>Search, edit, delete, or filter your saved tasks.</p>
+          </div>
+        </div>
+
+        <div class="card library-controls">
+          <label class="wide">
+            <span>Search tasks</span>
+            <input id="librarySearch" type="search" placeholder="Search title, notes, type, location...">
+          </label>
+          <label>
+            <span>Life area</span>
+            <select id="libraryLifeArea"></select>
+          </label>
+          <label>
+            <span>Energy</span>
+            <select id="libraryEnergy"></select>
+          </label>
+          <label>
+            <span>Time</span>
+            <select id="libraryTime"></select>
+          </label>
+          <div class="button-row wide">
+            <button id="seedButton" class="ghost" type="button">Add starter tasks</button>
+            <button id="exportButton" class="ghost" type="button">Export backup</button>
+            <label class="import-label ghost" for="importInput">Import backup</label>
+            <input id="importInput" class="hidden" type="file" accept="application/json">
+          </div>
+        </div>
+
+        <div id="taskList" class="list-stack"></div>
+      </section>
+
+      <section id="screen-history" class="screen" aria-labelledby="history-title">
+        <div class="card intro-card">
+          <div>
+            <h2 id="history-title">History</h2>
+            <p>Completed and skipped tasks appear here. This also helps the generator avoid repeats.</p>
+          </div>
+        </div>
+
+        <div class="card stats-grid" id="statsGrid"></div>
+        <div class="card button-row">
+          <button id="clearHistoryButton" class="danger ghost" type="button">Clear history</button>
+        </div>
+        <div id="historyList" class="list-stack"></div>
+      </section>
+    </main>
+
+    <nav class="bottom-nav" aria-label="Primary navigation">
+      <button class="nav-button active" type="button" data-screen="generator" aria-selected="true">
+        <span>🎲</span>
+        <strong>Pick</strong>
+      </button>
+      <button class="nav-button" type="button" data-screen="add" aria-selected="false">
+        <span>＋</span>
+        <strong>Add</strong>
+      </button>
+      <button class="nav-button" type="button" data-screen="library" aria-selected="false">
+        <span>📚</span>
+        <strong>Library</strong>
+      </button>
+      <button class="nav-button" type="button" data-screen="history" aria-selected="false">
+        <span>✓</span>
+        <strong>History</strong>
+      </button>
+    </nav>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="app.js" defer></script>
+</body>
+</html>
